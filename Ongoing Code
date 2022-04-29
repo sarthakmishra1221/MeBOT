@@ -1,0 +1,89 @@
+#include <TMRpcm.h>
+#include <SPI.h>
+#include <SD.h>
+#define SD_ChipSelectPin 53
+TMRpcm tmrpcm;
+#include <Stepper.h>
+const float STEPS_PER_REV = 32;
+const float GEAR_RED = 64;
+const float STEPS_PER_OUT_REV = STEPS_PER_REV * GEAR_RED;
+int StepsRequired;
+Stepper steppermotor(STEPS_PER_REV, A0, A2, A1, A3);
+
+#include"RTClib.h"
+RTC_DS1307 rtc;
+const int trigPin1 = A4;                       //Defines the trig pin of ultrasonic sensor syrup
+const int echoPin1= A5;                       //Defines the echo pin of ultrasonic sensor syrup
+
+const int trigPin = A6;                       //Defines the trig pin of ultrasonic sensor water
+const int echoPin = A7;                       //Defines the echo pin of ultrasonic sensor water
+
+float duration1;
+float distance1;
+
+float duration;
+float distance;
+
+int relay1 = 5;
+int relay2 = 6;
+int relay3 = 7;
+int relay4 = 8;
+
+int inPin = 4;
+int val = 0;
+
+bool S1 = true;
+bool S2 = true;
+bool S3 = true;
+
+int s1 = 10;
+int s2 = 11;
+int s3 = 12;
+
+int Press = 0;
+float avgh;
+
+bool i = 0;
+bool j = 0;
+bool k = 0;
+
+
+void setup() {
+  pinMode(s1, OUTPUT);
+  pinMode(s2, OUTPUT);
+  pinMode(s3, OUTPUT);
+  
+  pinMode(relay1, OUTPUT);
+  pinMode(relay2, OUTPUT);
+  pinMode(relay3, OUTPUT);
+  pinMode(relay4, OUTPUT);
+  
+  pinMode(inPin, INPUT);
+  
+  pinMode(trigPin1, OUTPUT);
+  pinMode(echoPin1, INPUT);
+  
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+ 
+  tmrpcm.speakerPin = 46;
+  
+  tmrpcm.setVolume(5);
+  Serial.begin(9600);
+  if (!SD.begin(SD_ChipSelectPin))
+  {
+    Serial.println("SD fail");
+    return;
+  }
+
+digitalWrite(s1, LOW);
+digitalWrite(s2, LOW);
+digitalWrite(s2, HIGH);
+
+  while (!Serial); // for Leonardo/Micro/Zero
+  Serial.begin(57600);
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
+}
