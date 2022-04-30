@@ -6,12 +6,6 @@
 TMRpcm tmrpcm;
 
 SoftwareSerial serial(3, 2);
-//#include <Wire.h>
-//#include "MAX30100_PulseOximeter.h"
-//#define REPORTING_PERIOD_MS     1000
-//uint32_t tsLastReport = 0;
-//PulseOximeter pox;
-
 #include <Stepper.h>
 const float STEPS_PER_REV = 32;
 const float GEAR_RED = 64;
@@ -104,8 +98,8 @@ void setup() {
 
 void F_DOSE()
 {
-  //DOSE_READY();
-  //delay(1000);
+  DOSE_READY();
+  delay(1000);
   
   while(1)
   {
@@ -397,12 +391,6 @@ void SWITCH_C()
 }
 
 
-//void onBeatDetected()
-//{
-//  Serial.println("Beat!");
-//}
-
-
 void STEPPER_MOVE()
 {
   digitalWrite(relay3, HIGH);
@@ -516,73 +504,6 @@ void DOSE_READY()
 
 
 
-//void PULSE_RATE()
-//{
-//  tmrpcm.play("10.wav");
-//  delay(5000);
-////  digitalWrite(A3, HIGH);
-////  digitalWrite(A3, LOW);
-////  delay(2000);
-//
-//  Serial.begin(115200);
-//  Serial.print("Initializing pulse oximeter..");
-//  if (!pox.begin()) {
-//        Serial.println(F("FAILED"));
-//        for(;;);
-//   } else {
-//       Serial.println(F("SUCCESS"));
-//   }
-//
-//   pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
-//   pox.setOnBeatDetectedCallback(onBeatDetected);
-//
-//
-//  int Heart;
-//  int H = 0;
-//  int i = 0;
-//while(i<25)
-//        {
-//        pox.update();
-//        if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
-//        Serial.println("Heart rate: ");
-//        Heart = (pox.getHeartRate());
-//        Serial.println(Heart);
-//        H = H + Heart;
-//        Serial.println(H);
-//        tsLastReport = millis();
-//        i++;
-//        }
-//        }
-//        Serial.println("Values are");
-//        Serial.println(H);
-//        avgh = H/22;
-//        Serial.println(avgh);
-//}
-//
-// void PULSE_PLAY()
-// {
-//  if (avgh > 50 && avgh < 85)
-// {
-//  Serial.println(F("Heart beat is normal"));
-//  tmrpcm.play("13.wav");
-//  delay(5000);
-//
-// }
-// else if (avgh > 85)
-// {
-//  Serial.println(F("Heart beat is high"));
-//  tmrpcm.play("11.wav");
-//  delay(5000);
-// }
-// else if (avgh < 50)
-// {
-//  Serial.println(F("heart beat is low"));
-//  tmrpcm.play("12.wav");
-//  delay(5000);
-// }
-// avgh = 0;
-// }
-
 
 void CHECK_PRESS()
 {
@@ -617,11 +538,10 @@ void loop()
     tmrpcm.play("2.wav");
     delay(3000);
   }
-
-
- //if (now.hour() == 15)
+  
+  if (now.hour() == 9 && now.minute() == 0 && now.second() == 0 )
   {
-   //CHECK_PRESS();
+   CHECK_PRESS();
    tmrpcm.play("3.wav");
    delay(4000);
    F_DOSE();
