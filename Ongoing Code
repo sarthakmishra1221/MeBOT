@@ -1,14 +1,25 @@
+#include <SoftwareSerial.h>
 #include <TMRpcm.h>
 #include <SPI.h>
 #include <SD.h>
 #define SD_ChipSelectPin 53
 TMRpcm tmrpcm;
+
+SoftwareSerial serial(3, 2);
+//#include <Wire.h>
+//#include "MAX30100_PulseOximeter.h"
+//#define REPORTING_PERIOD_MS     1000
+//uint32_t tsLastReport = 0;
+//PulseOximeter pox;
+
 #include <Stepper.h>
 const float STEPS_PER_REV = 32;
 const float GEAR_RED = 64;
 const float STEPS_PER_OUT_REV = STEPS_PER_REV * GEAR_RED;
 int StepsRequired;
 Stepper steppermotor(STEPS_PER_REV, A0, A2, A1, A3);
+
+
 
 #include"RTClib.h"
 RTC_DS1307 rtc;
@@ -36,9 +47,11 @@ bool S1 = true;
 bool S2 = true;
 bool S3 = true;
 
-int s1 = 10;
-int s2 = 11;
-int s3 = 12;
+int s1 = 13;
+int IN1 = 9;
+int IN2 = 10;
+int IN3 = 11;
+int IN4 = 12;
 
 int Press = 0;
 float avgh;
@@ -48,10 +61,14 @@ bool j = 0;
 bool k = 0;
 
 
+
 void setup() {
   pinMode(s1, OUTPUT);
-  pinMode(s2, OUTPUT);
-  pinMode(s3, OUTPUT);
+  digitalWrite(s1, HIGH);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
   
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
@@ -76,10 +93,6 @@ void setup() {
     return;
   }
 
-digitalWrite(s1, LOW);
-digitalWrite(s2, LOW);
-digitalWrite(s2, HIGH);
-
   while (!Serial); // for Leonardo/Micro/Zero
   Serial.begin(57600);
   if (! rtc.begin()) {
@@ -87,9 +100,11 @@ digitalWrite(s2, HIGH);
     while (1);
   }
 }
+
+
 void F_DOSE()
 {
-  DOSE_READY();
+  //DOSE_READY();
   //delay(1000);
   
   while(1)
@@ -116,7 +131,7 @@ void F_DOSE()
           {
            delay(500);
            digitalWrite(s1, LOW);
-           delay(6200);
+           delay(500);
            digitalWrite(s1, HIGH);
            tmrpcm.play("S1.wav");
            delay(5000);
@@ -160,7 +175,7 @@ void S_DOSE()
            delay(500);
            digitalWrite(IN1, HIGH);
            digitalWrite(IN2, LOW);
-           delay(2000);
+           delay(500);
            digitalWrite(IN1, LOW);
            digitalWrite(IN2, LOW);
            tmrpcm.play("S1.wav");
@@ -205,7 +220,7 @@ void T_DOSE()
            delay(500);
            digitalWrite(IN3, HIGH);
            digitalWrite(IN4, LOW);
-           delay(2000);
+           delay(500);
            digitalWrite(IN3, LOW);
            digitalWrite(IN4, LOW);
            tmrpcm.play("S1.wav");
@@ -230,7 +245,7 @@ void FIRST_DOSE()
     if (distance <= 10)
     {
       digitalWrite(relay4, HIGH);
-      delay(7000);
+      delay(5000);
       digitalWrite(relay4, LOW);
       SWITCH_C();
       break;
@@ -381,6 +396,13 @@ void SWITCH_C()
   digitalWrite(relay1, HIGH);
 }
 
+
+//void onBeatDetected()
+//{
+//  Serial.println("Beat!");
+//}
+
+
 void STEPPER_MOVE()
 {
   digitalWrite(relay3, HIGH);
@@ -492,6 +514,76 @@ void DOSE_READY()
   delay(1000);
 }
 
+
+
+//void PULSE_RATE()
+//{
+//  tmrpcm.play("10.wav");
+//  delay(5000);
+////  digitalWrite(A3, HIGH);
+////  digitalWrite(A3, LOW);
+////  delay(2000);
+//
+//  Serial.begin(115200);
+//  Serial.print("Initializing pulse oximeter..");
+//  if (!pox.begin()) {
+//        Serial.println(F("FAILED"));
+//        for(;;);
+//   } else {
+//       Serial.println(F("SUCCESS"));
+//   }
+//
+//   pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
+//   pox.setOnBeatDetectedCallback(onBeatDetected);
+//
+//
+//  int Heart;
+//  int H = 0;
+//  int i = 0;
+//while(i<25)
+//        {
+//        pox.update();
+//        if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
+//        Serial.println("Heart rate: ");
+//        Heart = (pox.getHeartRate());
+//        Serial.println(Heart);
+//        H = H + Heart;
+//        Serial.println(H);
+//        tsLastReport = millis();
+//        i++;
+//        }
+//        }
+//        Serial.println("Values are");
+//        Serial.println(H);
+//        avgh = H/22;
+//        Serial.println(avgh);
+//}
+//
+// void PULSE_PLAY()
+// {
+//  if (avgh > 50 && avgh < 85)
+// {
+//  Serial.println(F("Heart beat is normal"));
+//  tmrpcm.play("13.wav");
+//  delay(5000);
+//
+// }
+// else if (avgh > 85)
+// {
+//  Serial.println(F("Heart beat is high"));
+//  tmrpcm.play("11.wav");
+//  delay(5000);
+// }
+// else if (avgh < 50)
+// {
+//  Serial.println(F("heart beat is low"));
+//  tmrpcm.play("12.wav");
+//  delay(5000);
+// }
+// avgh = 0;
+// }
+
+
 void CHECK_PRESS()
 {
   if (Press == 40)
@@ -523,13 +615,13 @@ void loop()
   if (now.hour() == 8 && now.minute() == 0 && now.second() == 0)
   {
     tmrpcm.play("2.wav");
-    delay(5000);
+    delay(3000);
   }
 
 
-// if (now.hour() == 13)
+ //if (now.hour() == 15)
   {
-   CHECK_PRESS();
+   //CHECK_PRESS();
    tmrpcm.play("3.wav");
    delay(4000);
    F_DOSE();
