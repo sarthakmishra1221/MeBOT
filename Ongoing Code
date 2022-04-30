@@ -87,3 +87,547 @@ digitalWrite(s2, HIGH);
     while (1);
   }
 }
+void F_DOSE()
+{
+  DOSE_READY();
+  //delay(1000);
+  
+  while(1)
+  {
+    f_missed();
+    val = digitalRead(inPin);
+    if (val == 1)
+    {
+      delay(50);
+      val = digitalRead(inPin);
+      if (val == 0)
+      {
+      Serial.print("First dose");
+      SWITCH_O();
+      
+      if (S1 == true)
+      {  
+        while(1)
+        {
+          tmrpcm.play("s.wav");
+          delay(5000);
+          ULTRA1();
+          if(distance1 < 7)
+          {
+           delay(500);
+           digitalWrite(s1, LOW);
+           delay(6200);
+           digitalWrite(s1, HIGH);
+           tmrpcm.play("S1.wav");
+           delay(5000);
+           break;
+          }
+      }
+      }
+      FIRST_DOSE();
+      break;
+    }
+}
+}
+}
+void S_DOSE()
+{
+  DOSE_READY();
+  delay(1000);
+  
+  while (1)
+  {
+    s_missed();
+    val = digitalRead(inPin);
+    if (val == 1)
+    {
+      delay(50);
+      val = digitalRead(inPin);
+      if (val == 0)
+      {
+      Serial.print("Second dose");
+      SWITCH_O();
+
+      if (S2 == true)
+      {  
+        while(1)
+        {
+          tmrpcm.play("s.wav");
+          delay(5000);
+          ULTRA1();
+          if(distance1 < 5)
+          {
+           delay(500);
+           digitalWrite(IN1, HIGH);
+           digitalWrite(IN2, LOW);
+           delay(2000);
+           digitalWrite(IN1, LOW);
+           digitalWrite(IN2, LOW);
+           tmrpcm.play("S1.wav");
+           delay(5000);
+           break;
+          }
+      }
+      }
+      SECOND_DOSE();
+      break;
+    }
+  }
+}
+}
+void T_DOSE()
+{
+  DOSE_READY();
+  delay(1000);
+  
+  while (1)
+  {
+    t_missed();
+    val = digitalRead(inPin);
+    if (val == 1)
+    {
+      delay(50);
+      val = digitalRead(inPin);
+      if (val == 0)
+      {
+      Serial.print("Third dose");
+      SWITCH_O();
+
+      if (S3 == true)
+      {  
+        while(1)
+        {
+          tmrpcm.play("s.wav");
+          delay(5000);
+          ULTRA1();
+          if(distance1 < 5)
+          {
+           delay(500);
+           digitalWrite(IN3, HIGH);
+           digitalWrite(IN4, LOW);
+           delay(2000);
+           digitalWrite(IN3, LOW);
+           digitalWrite(IN4, LOW);
+           tmrpcm.play("S1.wav");
+           delay(5000);
+           break;
+          }
+      }
+      }
+      THIRD_DOSE();
+      break;
+    }
+  }
+}
+}
+
+void FIRST_DOSE()
+{
+  PLAY_GLASS();
+  while (1)
+  {
+    ULTRA();
+    if (distance <= 10)
+    {
+      digitalWrite(relay4, HIGH);
+      delay(7000);
+      digitalWrite(relay4, LOW);
+      SWITCH_C();
+      break;
+    }
+    else
+    {
+      PLAY_GLASS();
+      delay(3000);
+    }
+  }
+  tmrpcm.play("5.wav");
+  delay(5000);
+  i = 1;
+  Press = Press + 1;
+  //Serial.print(Press);
+}
+
+
+void SECOND_DOSE()
+{
+  PLAY_GLASS();
+
+  while (1)
+  {
+    ULTRA();
+    if (distance <= 10 )
+    {
+      digitalWrite(relay4, HIGH);
+      delay(5000);
+      digitalWrite(relay4, LOW);
+      SWITCH_C();
+      break;
+    }
+    else
+    {
+      PLAY_GLASS();
+      delay(2000);
+    }
+  }
+  tmrpcm.play("7.wav");
+  delay(5000);
+  j = 1;
+  Press = Press + 1;
+}
+
+void THIRD_DOSE()
+{ PLAY_GLASS();
+
+  while (1)
+  {
+    ULTRA();
+    if (distance <= 10 )
+    {
+      digitalWrite(relay4, HIGH);
+      delay(5000);
+      digitalWrite(relay4, LOW);
+      SWITCH_C();
+      break;
+    }
+    else
+    {
+      PLAY_GLASS();
+      delay(3000);
+    }
+  }
+  tmrpcm.play("9.wav");
+  delay(5000);
+  k = 1;
+  Press = Press + 1;
+
+}
+
+void f_missed()
+{
+  DateTime now = rtc.now();
+  if (now.hour() == 9 && now.minute() == 20 && now.second() == 0 && i == 0)
+  {
+    F_MISSED_DOSE();
+
+  }
+
+}
+
+void s_missed()
+{
+  DateTime now = rtc.now();
+  if (now.hour() == 15 && now.minute() == 20 && now.second() == 0 && k == 0)
+  {
+    S_MISSED_DOSE();
+
+  }
+
+}
+
+void t_missed()
+{
+  DateTime now = rtc.now();
+  if (now.hour() == 20 && now.minute() == 20 && now.second() == 0 && j == 0)
+  {
+    T_MISSED_DOSE();
+  }
+
+}
+
+void F_MISSED_DOSE()
+{
+  tmrpcm.play("A2.wav");
+  delay(20000);
+  DELAY_SMS();
+  delay(2000);
+  F_DOSE();
+}
+
+void S_MISSED_DOSE()
+{
+  tmrpcm.play("A2.wav");
+  delay(20000);
+  DELAY_SMS();
+  delay(2000);
+  S_DOSE();
+}
+
+void T_MISSED_DOSE()
+{
+  tmrpcm.play("A2.wav");
+  delay(20000);
+  DELAY_SMS();
+  delay(2000);
+  T_DOSE();
+}
+
+
+
+void SWITCH_O()
+{
+  digitalWrite(relay2, LOW);
+  digitalWrite(relay1, HIGH);
+  delay(250);
+  digitalWrite(relay2, HIGH);
+  digitalWrite(relay1, HIGH);
+}
+void SWITCH_C()
+{
+  digitalWrite(relay2, HIGH);
+  digitalWrite(relay1, LOW);
+  delay(400);
+  digitalWrite(relay2, HIGH);
+  digitalWrite(relay1, HIGH);
+}
+
+void STEPPER_MOVE()
+{
+  digitalWrite(relay3, HIGH);
+  delay(2000);
+  StepsRequired = 250 ;
+  steppermotor.setSpeed(1000);
+  steppermotor.step(StepsRequired);
+  delay(1000);
+  digitalWrite(relay3, LOW);
+}
+
+
+
+void STEPPER_FULLBACK()
+{
+  digitalWrite(relay3, HIGH);
+  StepsRequired = -1750 ;
+  steppermotor.setSpeed(1000);
+  steppermotor.step(StepsRequired);
+  delay(1000);
+  digitalWrite(relay3, LOW);
+}
+
+
+
+void PLAY_GLASS()
+{
+  tmrpcm.play("4.wav");
+  delay(2000);
+}
+
+
+
+float ULTRA1()
+{
+  Serial.println("Ultra1");
+  digitalWrite(trigPin1, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin1, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin1, LOW);
+  duration1 = pulseIn(echoPin1, HIGH);
+  distance1 = duration1 * 0.034 / 2;
+  Serial.println(distance1);
+}
+float ULTRA()
+{
+  Serial.println("Ultra");
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  Serial.println(distance);
+}
+
+void DELAY_SMS()
+{
+  serial.println("AT+CMGF=1");    //To send SMS in Text Mode
+  delay(1000);
+  serial.println("AT+CMGS=\"+918923700927\"\r"); //Change to destination phone number
+  delay(1000);
+  serial.println("Time for meds is overdue. Give the patient meds as soon as possible");//the content of the message
+  delay(100);
+  serial.println((char)26); //the stopping character Ctrl+Z
+  delay(1000);
+
+}
+
+
+void EMERGENCY_SMS()
+{
+  serial.println("AT+CMGF=1");    //To send SMS in Text Mode
+  delay(1000);
+  serial.println("AT+CMGS=\"+918923700927.\"\r"); //Change to destination phone number
+  delay(1000);
+  serial.println("Only five doses have left, Be ready to fill your MeBOT ");//the content of the message
+  delay(100);
+  serial.println((char)26); //the stopping character Ctrl+Z
+  delay(1000);
+
+}
+
+
+
+void STORAGE_SMS()
+{
+  serial.println("AT+CMGF=1");    //To send SMS in Text Mode
+  delay(1000);
+  serial.println("AT+CMGS=\"+918923700927.\"\r"); //Change to destination phone number
+  delay(1000);
+  serial.println("Alert!     Emergency!    All meds have finished, fill your MeBOT as soon as possible");//the content of the message
+  delay(100);
+  serial.println((char)26); //the stopping character Ctrl+Z
+  delay(1000);
+}
+
+void DOSE_READY()
+{
+  serial.println("AT+CMGF=1");    //To send SMS in Text Mode
+  delay(1000);
+  serial.println("AT+CMGS=\"+918923700927.\"\r"); //Change to destination phone number
+  delay(1000);
+  serial.println("YOUR DOSE IS READY, KINDLY TAKE THE DOSE ASAP");//the content of the message
+  delay(100);
+  serial.println((char)26); //the stopping character Ctrl+Z
+  delay(1000);
+}
+
+void CHECK_PRESS()
+{
+  if (Press == 40)
+  {
+    EMERGENCY_SMS();
+  }
+  if (Press == 45)
+  {
+    STORAGE_SMS();
+    Press = 0;
+  }
+  if (Press == 5 || Press == 10 || Press == 15 || Press == 20 || Press == 25 || Press == 30 || Press == 35 || Press == 40 || Press == 45)
+  {
+    STEPPER_MOVE();
+  }
+
+}
+
+void loop()
+{
+    
+  DateTime now = rtc.now();
+  if (now.hour() == 7 && now.minute() == 0 && now.second() == 0)
+  { 
+    tmrpcm.play("1.wav");
+    delay(3000);
+  }
+
+  if (now.hour() == 8 && now.minute() == 0 && now.second() == 0)
+  {
+    tmrpcm.play("2.wav");
+    delay(5000);
+  }
+
+
+// if (now.hour() == 13)
+  {
+   CHECK_PRESS();
+   tmrpcm.play("3.wav");
+   delay(4000);
+   F_DOSE();
+   delay(1000);
+  }
+
+  if (now.hour() == 14 && now.minute() == 0 && now.second() == 0)
+  {
+    tmrpcm.play("6.wav");
+    delay(3000);
+  }
+  if (now.hour() == 15 && now.minute() == 0 && now.second() == 0)
+  {
+    CHECK_PRESS();
+    tmrpcm.play("3.wav");
+    delay(4000);
+    S_DOSE();
+  }
+
+  if (now.hour() == 19 && now.minute() == 0 && now.second() == 0)
+  {
+    tmrpcm.play("8.wav");
+    delay(3000);
+  }
+  if (now.hour() == 20 && now.minute() == 0 && now.second() == 0)
+  {
+    CHECK_PRESS();
+    tmrpcm.play("3.wav");
+    delay(4000);
+    T_DOSE();
+  }
+}void CHECK_PRESS()
+{
+  if (Press == 40)
+  {
+    EMERGENCY_SMS();
+  }
+  if (Press == 45)
+  {
+    STORAGE_SMS();
+    Press = 0;
+  }
+  if (Press == 5 || Press == 10 || Press == 15 || Press == 20 || Press == 25 || Press == 30 || Press == 35 || Press == 40 || Press == 45)
+  {
+    STEPPER_MOVE();
+  }
+
+}
+
+void loop()
+{
+    
+  DateTime now = rtc.now();
+  if (now.hour() == 7 && now.minute() == 0 && now.second() == 0)
+  { 
+    tmrpcm.play("1.wav");
+    delay(3000);
+  }
+
+  if (now.hour() == 8 && now.minute() == 0 && now.second() == 0)
+  {
+    tmrpcm.play("2.wav");
+    delay(5000);
+  }
+
+
+// if (now.hour() == 13)
+  {
+   CHECK_PRESS();
+   tmrpcm.play("3.wav");
+   delay(4000);
+   F_DOSE();
+   delay(1000);
+  }
+
+  if (now.hour() == 14 && now.minute() == 0 && now.second() == 0)
+  {
+    tmrpcm.play("6.wav");
+    delay(3000);
+  }
+  if (now.hour() == 15 && now.minute() == 0 && now.second() == 0)
+  {
+    CHECK_PRESS();
+    tmrpcm.play("3.wav");
+    delay(4000);
+    S_DOSE();
+  }
+
+  if (now.hour() == 19 && now.minute() == 0 && now.second() == 0)
+  {
+    tmrpcm.play("8.wav");
+    delay(3000);
+  }
+  if (now.hour() == 20 && now.minute() == 0 && now.second() == 0)
+  {
+    CHECK_PRESS();
+    tmrpcm.play("3.wav");
+    delay(4000);
+    T_DOSE();
+  }
+}
